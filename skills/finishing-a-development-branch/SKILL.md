@@ -190,6 +190,18 @@ git worktree remove <worktree-path>
 - Get typed confirmation for Option 4
 - Clean up worktree for Options 1 & 4 only
 
+## Retrospective
+
+After completing a branch (Options 1 or 2), do a brief retrospective before moving on:
+
+- What went well? What should we keep doing?
+- What was slow, painful, or error-prone?
+- Did we follow the process? If we skipped steps, was that the right call?
+- Did reviews catch real issues or just create noise?
+- Were there upstream escalations? Could they have been caught earlier?
+
+Quick conversation, not a document. But if it produces an actionable change (process update, new convention, CLAUDE.md edit), commit it. The goal is continuous improvement of the workflow itself, not just the code.
+
 ## Integration
 
 **Called by:**

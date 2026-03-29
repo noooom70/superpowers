@@ -131,6 +131,19 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
+## Issue Tracking
+
+Each plan maps to a GitHub issue on the project board. When writing a plan:
+
+1. Create a GitHub issue at the module/feature level
+2. Include a checkbox checklist of the plan's tasks in the issue body
+3. Link the issue to the plan file in the issue description
+4. Reference the issue in PR descriptions and commit messages (`Closes #N`)
+
+**Board columns:** To Do → In Progress → Done
+
+**Issue granularity:** One issue per module or logical unit of work. Sub-tasks stay as checkboxes in the parent issue unless they're independently reviewable and mergeable (would have their own PR).
+
 ## Execution Handoff
 
 After saving the plan, offer execution choice:

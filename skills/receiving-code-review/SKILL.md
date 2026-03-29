@@ -110,6 +110,17 @@ FOR multi-item feedback:
   4. Verify no regressions
 ```
 
+## Upstream Escalation
+
+When review feedback reveals a problem that originated upstream (spec, design, or tests), escalate to the right phase rather than patching downstream:
+
+- **Spec problem found in code review** → update the spec first, then fix code to match
+- **Spec ambiguity found during implementation** → flag as upstream escalation, resolve before continuing
+- **Missing test coverage** → go back to RED phase, don't add tests as an afterthought
+- **Untestable interface** → revisit the design, don't hack around it
+
+Escalations are normal and expected. Flag them in review responses. They become blocking only if work cannot proceed correctly without resolving them. Non-blocking escalations should be discussed in retrospective.
+
 ## When To Push Back
 
 Push back when:

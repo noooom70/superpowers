@@ -324,6 +324,26 @@ PASS
 **REFACTOR**
 Extract validation for multiple fields if needed.
 
+## Test-Writing Checklist (RED Phase)
+
+Before moving from RED to GREEN, verify your tests against this checklist. These patterns were identified across real projects where partially-correct implementations passed all tests until review caught the gap:
+
+a. **Return value completeness** — if a method returns a dataclass or dict, assert *every* field, not just the one you're focused on. A test that only checks `result.name` will pass when every other field is wrong.
+
+b. **Field mapping coverage** — if a method transforms external data (API response, DB row) into a dataclass, verify the mapping for *all* fields. Most common gap: testing 2 of 9 fields and assuming the rest are correct.
+
+c. **Exact return values, not weak assertions** — `assert count == 3` not `assert count >= 1`. Weak assertions let broken implementations through.
+
+d. **Error type coverage** — for every method that parses/transforms data, write at least one test for malformed input. Verify it raises the *domain-specific* exception, not a raw `KeyError` or `TypeError`.
+
+e. **Boundary values** — if the spec says "fewer than 50", test exactly 49, 50, and 0. If a limit is "1-10", test 1 and 10.
+
+f. **Empty/None inputs** — empty lists, None parameters, zero counts. These are the most common source of real bugs.
+
+g. **Side effect verification** — if the spec says a method calls another (e.g., "calls `db.save()`"), verify the call happened with correct arguments. Tests that only check return values can miss implementations that compute the right answer without actually persisting it.
+
+h. **Mock `time.sleep`** in any test that exercises retry/backoff paths. Real sleeps make tests slow and flaky.
+
 ## Verification Checklist
 
 Before marking work complete:
@@ -336,6 +356,7 @@ Before marking work complete:
 - [ ] Output pristine (no errors, warnings)
 - [ ] Tests use real code (mocks only if unavoidable)
 - [ ] Edge cases and errors covered
+- [ ] Test-writing checklist (a-h above) satisfied
 
 Can't check all boxes? You skipped TDD. Start over.
 
