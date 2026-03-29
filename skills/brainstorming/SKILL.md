@@ -123,12 +123,25 @@ After writing the spec document, look at it with fresh eyes:
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
+**Architecture Review:**
+After self-review, the spec gets a formal architecture review via PR:
+
+1. Create a feature branch and PR for the spec
+2. Dispatch the `superpowers:architecture-reviewer` agent against the spec
+3. Agent posts findings as a PR comment (Round 1, Round 2, etc.)
+4. Fix blocking issues, commit, and request re-review until verdict is "Ready for implementation planning: Yes"
+5. Non-blocking issues are addressed at the implementer's discretion
+
+This is a *design* review, not a code review. It evaluates: strategic alignment, architecture quality (layer boundaries, testability, scale path), spec completeness (type consistency, field mappings, error paths), and robustness (idempotency, state tracking, failure recovery).
+
+See agent definition: `agents/architecture-reviewer.md`
+
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
+After the architecture review passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec written, architecture review passed, and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them and re-run the review. Only proceed once the user approves.
 
 **Implementation:**
 
