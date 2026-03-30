@@ -41,6 +41,22 @@ Task tool (general-purpose):
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.
 
+    ## Shell Commands
+
+    Every bash command must be a single, clear action. The user approves each one.
+
+    **Do:**
+    - `git add src/file.py tests/test_file.py`
+    - `pytest tests/test_file.py -v`
+    - `git commit -m "feat: add feature"`
+
+    **Don't:**
+    - `git add . && git commit -m "..." && git push`
+    - `pip install -e ".[dev]" && pytest -v | tail -20`
+
+    No chaining with `&&`, `||`, or `;` for unrelated operations. Pipes for a single
+    logical operation are fine (e.g. `pytest -v | tail -20`).
+
     ## Code Organization
 
     You reason best about code you can hold in context at once, and your edits are more
