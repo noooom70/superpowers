@@ -236,20 +236,22 @@ The plan must define a branching strategy that matches the phase structure:
 
 ```
 main
-  └── feat/<initiative-name>                    (initiative branch)
+  └── feat/<initiative-name>                      (initiative branch)
         ├── [foundation phase commits]
-        ├── feat/<initiative>/epic-<name>        (epic branch, worktree)
+        ├── feat/<initiative>--epic-<name>         (epic branch, worktree)
         │     ├── story commits (direct to branch)
-        │     ├── story retrospective commits
+        │     ├── story retrospective commits (when deviating from plan)
         │     └── epic retrospective commit
         │     └── PR → feat/<initiative-name>
-        ├── feat/<initiative>/epic-<name>        (parallel epic branch)
+        ├── feat/<initiative>--epic-<name>         (parallel epic branch)
         │     └── ... same pattern ...
         │     └── PR → feat/<initiative-name>
         ├── [integration phase commits]
         └── initiative retrospective
         └── PR → main
 ```
+
+**Branch naming:** Use double-dash (`--`) to separate initiative from epic names, NOT slash (`/`). Git cannot create `feat/x/y` as a branch if `feat/x` already exists as a branch ref. Epic worktree branches fork from the initiative branch tip and already contain all foundation code.
 
 **Commit boundaries:**
 - Stories commit directly to their epic branch (sequential, no conflicts)
@@ -263,13 +265,13 @@ main
 
 Every level of the hierarchy gets a retrospective. Learnings roll up from story → epic → initiative.
 
-**Story retrospective** — brief, appended after each story completes:
+**Story retrospective** — brief, appended after each story completes. **Conditional:** required when the story deviates from the plan (unexpected issues, design changes, spec gaps, API differences). Optional for stories that execute the plan verbatim with no surprises.
 ```markdown
 #### Story N.M Retrospective
 - **What worked:**
 - **What didn't:**
 - **Surprises / spec gaps:**
-- **Time estimate vs actual:**
+- **Plan deviations and why:**
 ```
 
 **Epic retrospective** — aggregates story retros + epic-level observations. Written as the last commit on the epic branch before the PR:

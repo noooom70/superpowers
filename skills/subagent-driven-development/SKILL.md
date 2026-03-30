@@ -128,13 +128,21 @@ Parallel dispatch requires:
 ### How It Works
 
 1. **Foundation phase completes** — shared code committed to the initiative branch (`feat/<initiative-name>`)
-2. **Create one worktree per parallel epic** — each on its own branch (`feat/<initiative>/epic-<name>`) from the initiative branch tip
-3. **Dispatch one epic-level agent per worktree** — each agent executes its stories sequentially (same story-level process: implement → spec review → quality review). Stories commit directly to the epic branch.
+2. **Create one worktree per parallel epic** — each on its own branch from the initiative branch tip. **Branch naming:** use `feat/<initiative>--epic-<name>` (double-dash separator), NOT `feat/<initiative>/epic-<name>` — git cannot create `feat/x/y` if `feat/x` already exists as a branch ref.
+3. **Dispatch one epic-level agent per worktree** — each agent executes its stories sequentially (same story-level process: implement → spec review → quality review). Stories commit directly to the epic branch. The worktree branch already contains all foundation code (it forked from the initiative branch tip) — agents must NOT cherry-pick or duplicate foundation commits.
 4. **Wait for all agents to complete** — do not proceed until all are done
 5. **Review each epic's work** — read summaries, verify file ownership was respected
 6. **PR each epic branch into the initiative branch** — epic-level review (cross-story coherence, retro included)
 7. **Run full test suite** — verify everything works together after merges
 8. **Proceed to integration phase** if one exists
+
+### Worktree Environment Setup
+
+Epic agents run in isolated worktrees that may not share the main worktree's virtual environment. The epic agent prompt must include explicit environment setup instructions:
+
+- Tell the agent where the venv is (e.g. `/path/to/main-repo/.venv/bin/python3`) OR instruct it to create its own: `python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"`
+- Tell the agent exactly how to run tests (e.g. `/path/to/main-repo/.venv/bin/python3 -m pytest`)
+- If the main venv isn't accessible from the worktree, the agent must install deps locally
 
 ### Epic Agent Prompt
 
@@ -142,7 +150,8 @@ When dispatching a parallel epic agent, provide:
 - The epic's section from the plan (all stories with full code)
 - The plan header (goal, architecture, tech stack)
 - File ownership declaration (what it owns, what it reads)
-- Foundation code that's already committed (or tell it to read the relevant files)
+- Explicit note: "Your branch already contains all foundation code — do NOT cherry-pick or duplicate foundation commits"
+- Environment setup: how to access or create a venv, exact pytest command
 - Constraint: only modify files you own
 - Retrospective requirement: write story retros after each story, epic retro as final commit
 
@@ -197,7 +206,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 Subagents must write retrospectives at every level. This is how learnings survive subagent context boundaries.
 
-**Story retrospective:** Each implementer subagent appends a brief retro after completing a story (what worked, what didn't, surprises, spec gaps). Committed with the story.
+**Story retrospective:** Each implementer subagent appends a brief retro after completing a story (what worked, what didn't, surprises, spec gaps). Committed with the story. **Conditional:** required when the story deviates from the plan (unexpected issues, design changes, spec gaps found). Optional for stories that execute the plan verbatim with no surprises.
 
 **Epic retrospective:** The epic-level agent (or coordinator for serial epics) writes an epic retro as the final commit on the epic branch. Aggregates story retros + adds epic-level observations.
 
