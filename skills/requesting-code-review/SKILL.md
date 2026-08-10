@@ -45,6 +45,14 @@ Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md
 - Note Minor issues for later
 - Push back if reviewer is wrong (with reasoning)
 
+**4. Upstream escalation:**
+If a review finds a problem that originated in an earlier phase, escalate — don't patch the symptom downstream:
+- **Code review finds a spec problem** → go back to spec, don't just fix the code
+- **Code review finds missing tests** → go back to test-writing, don't just add a quick test
+- **Implementation reveals untestable interface** → revisit the design, don't hack around it
+
+Escalations are normal — later stages have more information than earlier ones. They become blocking only if work cannot proceed correctly without resolving them.
+
 ## Example
 
 ```
