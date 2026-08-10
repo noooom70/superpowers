@@ -28,8 +28,9 @@ You MUST create a task for each of these items and complete them in order:
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+8. **Architecture review** — dispatch the architecture-reviewer agent against the spec, fix blocking issues (see below)
+9. **User reviews written spec** — ask user to review the spec file before proceeding
+10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
 
@@ -42,6 +43,8 @@ digraph brainstorming {
     "User approves design?" [shape=diamond];
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
+    "Architecture review\n(dispatch agent)" [shape=box];
+    "Blocking issues?" [shape=diamond];
     "User reviews spec?" [shape=diamond];
     "Invoke writing-plans skill" [shape=doublecircle];
 
@@ -52,7 +55,10 @@ digraph brainstorming {
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Write design doc" [label="yes"];
     "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
+    "Spec self-review\n(fix inline)" -> "Architecture review\n(dispatch agent)";
+    "Architecture review\n(dispatch agent)" -> "Blocking issues?";
+    "Blocking issues?" -> "Architecture review\n(dispatch agent)" [label="yes - fix, re-review"];
+    "Blocking issues?" -> "User reviews spec?" [label="no"];
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
     "User reviews spec?" -> "Invoke writing-plans skill" [label="approved"];
 }
@@ -119,12 +125,23 @@ After writing the spec document, look at it with fresh eyes:
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
+**Architecture Review:**
+After self-review, the spec gets a formal design review:
+
+1. Dispatch the `architecture-reviewer` agent with the spec file path. It reads the spec and returns findings directly — no files written, nothing posted.
+2. Fix blocking issues in the spec, commit, and re-dispatch until the verdict is "Ready for implementation planning: Yes".
+3. Important and minor findings are addressed at your discretion — note unaddressed ones for the user review gate.
+
+This is a *design* review, not a code review. It evaluates: strategic alignment, architecture quality (layer boundaries, testability, scale path), spec completeness (type consistency, field mappings, error paths), and robustness (idempotency, state tracking, failure recovery).
+
+See agent definition: `agents/architecture-reviewer.md`
+
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
+After the architecture review passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec written, architecture review passed, and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them and re-run the review. Only proceed once the user approves.
 
 **Implementation:**
 
